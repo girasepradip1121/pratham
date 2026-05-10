@@ -22,29 +22,27 @@ const Navbar = ({ onContactClick }) => {
   ];
 
   return (
-    <nav 
-      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${
-        isScrolled ? 'py-4' : 'py-6'
-      }`}
+    <nav
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${isScrolled ? 'py-4' : 'py-6'
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6">
-        <div className={`relative flex items-center justify-between px-6 py-3 rounded-2xl transition-all duration-500 ${
-          isScrolled ? 'glass' : 'bg-transparent'
-        }`}>
+        <div className={`relative flex items-center justify-between px-6 py-3 rounded-2xl transition-all duration-500 ${isScrolled ? 'glass' : 'bg-transparent'
+          }`}>
           {/* Logo */}
           <a href="#" className="flex items-center gap-2 group">
             <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center font-bold text-black group-hover:rotate-12 transition-transform">
               P
             </div>
             <span className="text-xl font-bold tracking-tighter text-white">
-              PRATHAMESH<span className="text-primary-500">CET</span>
+              PRATHAM'S<span className="text-primary-500">CET</span>
             </span>
           </a>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a 
+              <a
                 key={link.name}
                 href={link.href}
                 className="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group"
@@ -59,7 +57,7 @@ const Navbar = ({ onContactClick }) => {
           </div>
 
           {/* Mobile Toggle */}
-          <button 
+          <button
             className="md:hidden text-white p-2"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -79,7 +77,7 @@ const Navbar = ({ onContactClick }) => {
           >
             <div className="flex flex-col gap-4 p-6">
               {navLinks.map((link) => (
-                <a 
+                <a
                   key={link.name}
                   href={link.href}
                   className="text-lg font-medium text-gray-300"

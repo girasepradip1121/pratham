@@ -29,24 +29,24 @@ const Hero = ({ onCtaClick }) => {
             </div>
 
             <h1 className="text-6xl md:text-8xl font-serif font-bold mb-8 leading-[1.1] tracking-tight">
-              महारष्ट्रातील बेस्ट <br />
-              <span className="text-accent-gradient italic">काउन्सिलिंग</span> प्लॅटफॉर्म
+              Maharashtra's Best <br />
+              <span className="text-accent-gradient italic">Counselling</span> Platform
             </h1>
 
             <p className="text-gray-400 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-              तुमच्या स्वप्नातील कॉलेज आणि ब्रांच निवडण्यासाठी आम्ही तुम्हाला मदत करू. 
+              तुमच्या स्वप्नातील कॉलेज आणि ब्रांच निवडण्यासाठी आम्ही तुम्हाला मदत करू.
               आमच्या तज्ञ मार्गदर्शनाखाली तुमची प्रवेश प्रक्रिया सोपी आणि सुरक्षित करा.
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="w-full sm:w-auto group"
               onClick={() => window.open('https://wa.me/91XXXXXXXXXX', '_blank')}
             >
@@ -54,10 +54,10 @@ const Hero = ({ onCtaClick }) => {
               WhatsApp वर चर्चा करा
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            
-            <Button 
-              variant="outline" 
-              size="lg" 
+
+            <Button
+              variant="outline"
+              size="lg"
               className="w-full sm:w-auto group"
               onClick={onCtaClick}
             >

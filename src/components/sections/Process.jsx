@@ -1,69 +1,146 @@
-import { ClipboardList, CreditCard, Users2, ArrowRight } from 'lucide-react';
+import {
+  ClipboardList,
+  CreditCard,
+  Users2,
+  ShieldCheck
+} from 'lucide-react';
+
 import Section from '../ui/Section';
 
 const Process = () => {
   const steps = [
     {
-      title: 'माहिती भरा',
-      desc: 'तुमची शैक्षणिक माहिती आणि स्कोर फॉर्ममध्ये भरा जेणेकरून आम्ही तुमचे प्रोफाइल समजू शकू.',
+      number: '01',
+      title: 'Form Fill करा',
+      desc: 'तुझा CET score, preferred branch आणि location सांगा. फक्त 2 मिनिटांचं काम.',
       icon: ClipboardList,
-      color: 'text-blue-500',
+      color: 'text-blue-400',
       bg: 'bg-blue-500/10'
     },
     {
-      title: 'प्लॅन निवडा',
-      desc: 'तुमच्या गरजेनुसार आणि बजेटनुसार आमचा कोणताही एक प्रिमियम प्लॅन निवडा.',
+      number: '02',
+      title: 'Plan मिळेल',
+      desc: 'Score नुसार personalized college list आणि strategy 24 तासांत तयार होईल.',
       icon: CreditCard,
-      color: 'text-primary-500',
+      color: 'text-primary-400',
       bg: 'bg-primary-500/10'
     },
     {
-      title: 'वैयक्तिक चर्चा',
-      desc: 'आमच्या तज्ञांसोबत १-वर-१ सत्रात तुमच्या सर्व शंकांचे निरसन करा आणि बेस्ट कॉलेज मिळवा.',
+      number: '03',
+      title: '1-on-1 Session',
+      desc: 'Video call वर सगळे doubts clear होतील — college, branch, career सगळं.',
       icon: Users2,
-      color: 'text-green-500',
+      color: 'text-green-400',
       bg: 'bg-green-500/10'
+    },
+    {
+      number: '04',
+      title: 'College पर्यंत Support',
+      desc: 'Admission पूर्ण होईपर्यंत — documents ते hostel पर्यंत तुझ्यासोबत.',
+      icon: ShieldCheck,
+      color: 'text-yellow-400',
+      bg: 'bg-yellow-500/10'
     }
   ];
 
   return (
-    <Section id="process" className="bg-surface/30">
-      <div className="text-center mb-24">
-        <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-white tracking-tight">
-          प्रवेशाचा <span className="text-accent-gradient italic">सोपा</span> मार्ग
-        </h2>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">
-          आम्ही तुमची प्रवेश प्रक्रिया ३ सोप्या टप्प्यात विभागली आहे, ज्यामुळे तुम्हाला कोणताही तणाव येणार नाही.
-        </p>
-      </div>
+    <Section
+      id="process"
+      className="relative overflow-hidden bg-[#050816] py-20 md:py-28"
+    >
+      {/* Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-primary-500/10 blur-[140px] rounded-full pointer-events-none" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 relative">
-        {/* Connection Line */}
-        <div className="hidden lg:block absolute top-[40px] left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        
-        {steps.map((step, index) => (
-          <div key={index} className="relative group">
-            {/* Step Number */}
-            <div className="absolute -top-12 left-0 text-9xl font-bold text-white/5 font-serif select-none group-hover:text-primary-500/10 transition-colors duration-500">
-              0{index + 1}
-            </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Label */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-12 h-px bg-primary-500" />
+          <span className="text-primary-400 uppercase tracking-[0.3em] text-sm font-semibold">
+            PROCESS
+          </span>
+        </div>
 
-            <div className="relative z-10 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <div className={`w-20 h-20 rounded-[2rem] ${step.bg} flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-white/5 shadow-2xl`}>
-                <step.icon size={36} className={step.color} />
+        {/* Heading */}
+        <div className="max-w-3xl mb-20 md:mb-28">
+          <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8">
+            Counselling कसं <br />
+            काम करतं?
+          </h2>
+
+          <p className="text-gray-400 text-lg md:text-2xl font-light leading-relaxed max-w-2xl">
+            CET result पासून college admission पर्यंत — simple 4 steps मध्ये.
+          </p>
+        </div>
+
+        {/* Timeline */}
+        <div className="relative">
+          {/* Desktop Line */}
+          <div className="hidden lg:block absolute top-[38px] left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-primary-500/40 to-transparent" />
+
+          {/* Mobile Line */}
+          <div className="lg:hidden absolute left-[38px] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary-500/30 to-transparent" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 lg:gap-10">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className="relative group flex lg:block items-start gap-6"
+              >
+                {/* Circle */}
+                <div className="relative z-10 flex-shrink-0">
+                  <div
+                    className="
+                      w-20 h-20 rounded-full
+                      glass
+                      border border-white/10
+                      flex items-center justify-center
+                      group-hover:border-primary-500/40
+                      transition-all duration-500
+                      group-hover:-translate-y-1
+                    "
+                  >
+                    <span className="text-primary-400 font-bold text-2xl">
+                      {step.number}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="pt-2 lg:pt-10 lg:text-center">
+                  {/* Icon */}
+                  <div
+                    className={`
+                      hidden lg:flex
+                      w-16 h-16 rounded-2xl
+                      ${step.bg}
+                      border border-white/10
+                      items-center justify-center
+                      mx-auto mb-8
+                      group-hover:scale-110
+                      group-hover:rotate-3
+                      transition-all duration-500
+                    `}
+                  >
+                    <step.icon
+                      size={28}
+                      className={step.color}
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight">
+                    {step.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-gray-400 leading-8 text-[15px] md:text-lg font-light max-w-xs lg:max-w-none mx-auto">
+                    {step.desc}
+                  </p>
+                </div>
               </div>
-              
-              <h3 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
-                {step.title}
-                <ArrowRight className="w-5 h-5 text-gray-700 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-              </h3>
-              
-              <p className="text-gray-400 leading-relaxed font-light">
-                {step.desc}
-              </p>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </Section>
   );

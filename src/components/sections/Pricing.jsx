@@ -47,7 +47,7 @@ const Pricing = ({ onCtaClick }) => {
   return (
     <Section
       id="pricing"
-      className="relative overflow-hidden bg-background py-20 lg:py-28"
+      className="relative overflow-hidden bg-background py-10 lg:py-14"
     >
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-500/5 rounded-full blur-[140px] pointer-events-none" />

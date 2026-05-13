@@ -77,7 +77,7 @@ const Hero = ({ onCtaClick }) => {
               className="w-full sm:w-auto group min-h-[56px]"
               onClick={() =>
                 window.open(
-                  'https://wa.me/91XXXXXXXXXX',
+                  'https://wa.me/917666991085',
                   '_blank'
                 )
               }

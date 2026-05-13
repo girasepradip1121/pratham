@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 
-const Section = ({ 
-  children, 
-  id, 
-  className = '', 
+const Section = ({
+  children,
+  id,
+  className = '',
   containerClassName = '',
   initial = { opacity: 0, y: 20 },
   whileInView = { opacity: 1, y: 0 },
@@ -11,7 +11,7 @@ const Section = ({
   transition = { duration: 0.6, ease: "easeOut" }
 }) => {
   return (
-    <section id={id} className={`py-24 relative overflow-hidden ${className}`}>
+    <section id={id} className={`py-5 relative overflow-hidden ${className}`}>
       <motion.div
         initial={initial}
         whileInView={whileInView}

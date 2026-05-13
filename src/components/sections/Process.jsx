@@ -46,7 +46,7 @@ const Process = () => {
   return (
     <Section
       id="process"
-      className="relative overflow-hidden bg-[#050816] py-20 md:py-28"
+      className="relative overflow-hidden bg-[#050816] py-10 md:py-14"
     >
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-primary-500/10 blur-[140px] rounded-full pointer-events-none" />

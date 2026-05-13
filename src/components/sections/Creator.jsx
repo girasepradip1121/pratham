@@ -11,7 +11,7 @@ import Section from '../ui/Section';
 
 const Creator = () => {
   return (
-    <Section className="relative overflow-hidden bg-background py-20 lg:py-24">
+    <Section className="relative overflow-hidden bg-background py-10 lg:py-12">
       {/* Background Glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-500/10 blur-[140px] rounded-full pointer-events-none" />
 

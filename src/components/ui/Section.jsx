@@ -11,14 +11,15 @@ const Section = ({
   transition = { duration: 0.6, ease: "easeOut" }
 }) => {
   return (
-    <section id={id} className={`py-5 relative overflow-hidden ${className}`}>
-      <motion.div
-        initial={initial}
-        whileInView={whileInView}
-        viewport={viewport}
-        transition={transition}
-        className={`max-w-7xl mx-auto px-6 ${containerClassName}`}
-      >
+    <section
+      id={id}
+      className={`py-16 sm:py-20 lg:py-24 relative overflow-hidden ${className}`}
+    >      <motion.div
+      initial={initial}
+      whileInView={whileInView}
+      viewport={viewport}
+      transition={transition}
+      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${containerClassName}`}    >
         {children}
       </motion.div>
     </section>

@@ -9,7 +9,14 @@ import { FaInstagram } from 'react-icons/fa6';
 
 import Section from '../ui/Section';
 
-const Creator = () => {
+const Creator = ({ data = [] }) => {
+  const creator = data.length > 0 ? data[0] : {
+    name: 'Loading...',
+    role: 'Please wait...',
+    description: 'Loading description...',
+    imageUrl: ''
+  };
+
   return (
     <Section className="relative overflow-hidden bg-background py-10 lg:py-12">
       {/* Background Glow */}
@@ -54,11 +61,11 @@ const Creator = () => {
 
                   <div>
                     <h4 className="text-xl sm:text-2xl font-bold text-white">
-                      Prathamesh
+                      {creator.name}
                     </h4>
 
                     <p className="text-gray-500 text-sm sm:text-base">
-                      Content Creator · 90K+ Community
+                      {creator.role}
                     </p>
                   </div>
                 </div>
@@ -91,7 +98,7 @@ const Creator = () => {
 
             {/* Heading */}
             <h2 className="text-4xl sm:text-5xl md:text-6xl xl:text-[5rem] font-bold text-white leading-[1.02] tracking-tight mb-8 text-center lg:text-left">
-              मी Prathamesh — <br />
+              मी {creator.name} — <br />
               तुझा Trusted Senior
             </h2>
 

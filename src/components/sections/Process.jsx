@@ -1,46 +1,9 @@
-import {
-  ClipboardList,
-  CreditCard,
-  Users2,
-  ShieldCheck
-} from 'lucide-react';
-
+import * as LucideIcons from 'lucide-react';
 import Section from '../ui/Section';
 
-const Process = () => {
-  const steps = [
-    {
-      number: '01',
-      title: 'Form Fill करा',
-      desc: 'तुझा CET score, preferred branch आणि location सांगा. फक्त 2 मिनिटांचं काम.',
-      icon: ClipboardList,
-      color: 'text-blue-400',
-      bg: 'bg-blue-500/10'
-    },
-    {
-      number: '02',
-      title: 'Plan मिळेल',
-      desc: 'Score नुसार personalized college list आणि strategy 24 तासांत तयार होईल.',
-      icon: CreditCard,
-      color: 'text-primary-400',
-      bg: 'bg-primary-500/10'
-    },
-    {
-      number: '03',
-      title: '1-on-1 Session',
-      desc: 'Video call वर सगळे doubts clear होतील — college, branch, career सगळं.',
-      icon: Users2,
-      color: 'text-green-400',
-      bg: 'bg-green-500/10'
-    },
-    {
-      number: '04',
-      title: 'College पर्यंत Support',
-      desc: 'Admission पूर्ण होईपर्यंत — documents ते hostel पर्यंत तुझ्यासोबत.',
-      icon: ShieldCheck,
-      color: 'text-yellow-400',
-      bg: 'bg-yellow-500/10'
-    }
+const Process = ({ data = [] }) => {
+  const steps = data.length > 0 ? data : [
+    { number: '01', title: 'Loading...', desc: 'Please wait...', iconName: 'ClipboardList', colorClass: 'text-blue-400', bgClass: 'bg-blue-500/10' }
   ];
 
   return (
@@ -81,7 +44,9 @@ const Process = () => {
           <div className="lg:hidden absolute left-[38px] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary-500/30 to-transparent" />
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 lg:gap-10">
-            {steps.map((step, index) => (
+            {steps.map((step, index) => {
+              let IconComponent = LucideIcons[step.iconName] || LucideIcons.HelpCircle;
+              return (
               <div
                 key={index}
                 className="relative group flex lg:block items-start gap-6"
@@ -100,7 +65,7 @@ const Process = () => {
                     "
                   >
                     <span className="text-primary-400 font-bold text-2xl">
-                      {step.number}
+                      0{index + 1}
                     </span>
                   </div>
                 </div>
@@ -112,7 +77,7 @@ const Process = () => {
                     className={`
                       hidden lg:flex
                       w-16 h-16 rounded-2xl
-                      ${step.bg}
+                      ${step.bgClass || 'bg-primary-500/10'}
                       border border-white/10
                       items-center justify-center
                       mx-auto mb-8
@@ -121,9 +86,9 @@ const Process = () => {
                       transition-all duration-500
                     `}
                   >
-                    <step.icon
+                    <IconComponent
                       size={28}
-                      className={step.color}
+                      className={step.colorClass || 'text-primary-400'}
                     />
                   </div>
 
@@ -134,11 +99,12 @@ const Process = () => {
 
                   {/* Description */}
                   <p className="text-gray-400 leading-8 text-[15px] md:text-lg font-light max-w-xs lg:max-w-none mx-auto">
-                    {step.desc}
+                    {step.description || step.desc}
                   </p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

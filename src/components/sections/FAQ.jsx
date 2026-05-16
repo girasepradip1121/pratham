@@ -3,24 +3,9 @@ import { Plus, Minus, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Section from '../ui/Section';
 
-const FAQ = () => {
-  const faqs = [
-    {
-      q: 'ही मार्गदर्शन प्रक्रिया कशी काम करते?',
-      a: 'एकदा तुम्ही प्लॅन घेतला की, तुम्हाला एक फॉर्म पाठवला जाईल. त्यानंतर आमचे तज्ञ तुमच्याशी १-वर-१ संवाद साधून तुम्हाला कॉलेज लिस्ट आणि मार्गदर्शन पुरवतील.'
-    },
-    {
-      q: 'कमी स्कोर असूनही चांगले कॉलेज मिळू शकते का?',
-      a: 'हो, योग्य प्रेफरन्स लिस्ट आणि कॅप राउंड स्ट्रॅटेजी वापरून आम्ही तुम्हाला उपलब्ध पर्यायांपैकी सर्वोत्तम कॉलेज मिळवून देण्यास मदत करतो.'
-    },
-    {
-      q: 'प्लॅनची वैधता किती दिवस आहे?',
-      a: 'प्लॅनची वैधता तुमच्या प्रत्यक्ष प्रवेश प्रक्रियेच्या शेवटच्या दिवसापर्यंत (Admission Confirmed) असते.'
-    },
-    {
-      q: 'मला वैयक्तिक कॉलेज लिस्ट मिळेल का?',
-      a: 'हो, तुमच्या कास्ट, रिझर्व्हेशन आणि स्कोरनुसार पूर्णपणे कस्टमाईज्ड कॉलेज लिस्ट दिली जाईल.'
-    }
+const FAQ = ({ data = [] }) => {
+  const faqs = data.length > 0 ? data : [
+    { q: 'Loading...', a: 'Please wait...' }
   ];
 
   const [openIndex, setOpenIndex] = useState(0);
@@ -56,7 +41,7 @@ const FAQ = () => {
                 <span className={`text-xl font-medium transition-colors duration-300 ${
                   openIndex === i ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'
                 }`}>
-                  {faq.q}
+                  {faq.question || faq.q}
                 </span>
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${
                   openIndex === i ? 'bg-primary-500 text-black rotate-180' : 'bg-white/5 text-gray-500 group-hover:bg-white/10'
@@ -75,7 +60,7 @@ const FAQ = () => {
                   >
                     <div className="px-8 pb-8 text-gray-400 leading-relaxed font-light text-lg">
                       <div className="pt-2 border-t border-white/5">
-                        {faq.a}
+                        {faq.answer || faq.a}
                       </div>
                     </div>
                   </motion.div>

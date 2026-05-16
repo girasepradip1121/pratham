@@ -17,7 +17,19 @@ const Home = () => {
   const scrollTimerRef = useRef(null);
   const hasShownAuthRef = useRef(false);
 
+  const [cmsData, setCmsData] = useState({
+    stats: [], faqs: [], processSteps: [], roadmapSteps: [], pricingPlans: [], creatorProfiles: []
+  });
+
   const toggleForm = () => setIsFormOpen(!isFormOpen);
+
+  // Fetch CMS Data
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/public/cms-data`)
+      .then(res => res.json())
+      .then(data => setCmsData(data))
+      .catch(console.error);
+  }, []);
 
   // Scroll listener to trigger auth modal after 3 seconds of scrolling
   useEffect(() => {
@@ -29,7 +41,6 @@ const Home = () => {
         hasShownAuthRef.current = true;
       }, 3000);
     };
-    window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
@@ -37,21 +48,21 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-[90vh] lg:min-h-screen bg-background">
       <Navbar onContactClick={toggleForm} />
-      
+
       <main>
         <Hero onCtaClick={toggleForm} />
-        <Stats />
-        <Process />
-        <Creator />
-        <Roadmap />
-        <Pricing onCtaClick={toggleForm} />
-        <FAQ />
+        <Stats data={cmsData.stats} />
+        <Process data={cmsData.processSteps} />
+        <Creator data={cmsData.creatorProfiles} />
+        <Roadmap data={cmsData.roadmapSteps} />
+        <Pricing data={cmsData.pricingPlans} onCtaClick={toggleForm} />
+        <FAQ data={cmsData.faqs} />
       </main>
 
       <Footer />
-      
+
       <InquiryForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} defaultTab="login" />
     </div>

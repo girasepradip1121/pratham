@@ -1,63 +1,9 @@
-import {
-  Trophy,
-  FileText,
-  ListChecks,
-  School,
-  ArrowDown,
-  GraduationCap,
-  Target,
-  Briefcase,
-  Building2,
-  FileCheck,
-  MessageCircleMore
-} from 'lucide-react';
-
+import * as LucideIcons from 'lucide-react';
 import Section from '../ui/Section';
 
-const Roadmap = () => {
-  const features = [
-    {
-      title: 'College & Branch Guidance',
-      desc: 'Best colleges आणि branches निवडण्यासाठी personalized guidance.',
-      icon: GraduationCap,
-      color: 'text-orange-400',
-      bg: 'bg-orange-500/10'
-    },
-    {
-      title: 'CAP Round Strategy',
-      desc: 'Round-wise smart priority strategy आणि cutoff analysis.',
-      icon: Target,
-      color: 'text-yellow-400',
-      bg: 'bg-yellow-500/10'
-    },
-    {
-      title: 'Career Roadmap',
-      desc: 'Placements, higher studies आणि future opportunities बद्दल clarity.',
-      icon: Briefcase,
-      color: 'text-primary-400',
-      bg: 'bg-primary-500/10'
-    },
-    {
-      title: 'Campus Partner Network',
-      desc: 'Trusted colleges आणि partner network कडून support.',
-      icon: Building2,
-      color: 'text-blue-400',
-      bg: 'bg-blue-500/10'
-    },
-    {
-      title: 'Document Checklist',
-      desc: 'Admission documents verification आणि checklist support.',
-      icon: FileCheck,
-      color: 'text-green-400',
-      bg: 'bg-green-500/10'
-    },
-    {
-      title: 'WhatsApp Support',
-      desc: 'Instant updates आणि direct WhatsApp doubt solving.',
-      icon: MessageCircleMore,
-      color: 'text-emerald-400',
-      bg: 'bg-emerald-500/10'
-    }
+const Roadmap = ({ data = [] }) => {
+  const features = data.length > 0 ? data : [
+    { title: 'Loading...', desc: 'Please wait...', iconName: 'GraduationCap', colorClass: 'text-orange-400', bgClass: 'bg-orange-500/10' }
   ];
 
   return (
@@ -89,7 +35,9 @@ const Roadmap = () => {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
+          {features.map((feature, index) => {
+            let IconComponent = LucideIcons[feature.iconName] || LucideIcons.HelpCircle;
+            return (
             <div
               key={index}
               className="glass glass-hover rounded-[2rem] p-8 relative overflow-hidden group"
@@ -99,9 +47,9 @@ const Roadmap = () => {
 
               {/* Icon */}
               <div
-                className={`w-16 h-16 rounded-2xl ${feature.bg} border border-white/10 flex items-center justify-center mb-7 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}
+                className={`w-16 h-16 rounded-2xl ${feature.bgClass || 'bg-primary-500/10'} border border-white/10 flex items-center justify-center mb-7 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}
               >
-                <feature.icon className={feature.color} size={30} />
+                <IconComponent className={feature.colorClass || 'text-primary-400'} size={30} />
               </div>
 
               {/* Title */}
@@ -111,7 +59,7 @@ const Roadmap = () => {
 
               {/* Description */}
               <p className="text-gray-400 leading-8 font-light text-[15px] md:text-base">
-                {feature.desc}
+                {feature.description || feature.desc}
               </p>
 
               {/* Big Number */}
@@ -119,7 +67,8 @@ const Roadmap = () => {
                 0{index + 1}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </Section>

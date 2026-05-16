@@ -1,36 +1,21 @@
-import { Users, GraduationCap } from 'lucide-react';
-import { FaInstagram } from 'react-icons/fa6';
+import * as LucideIcons from 'lucide-react';
+import * as FaIcons from 'react-icons/fa6';
 import Section from '../ui/Section';
 
-const Stats = () => {
-  const stats = [
-    {
-      label: 'Instagram Followers',
-      value: '90K+',
-      icon: FaInstagram,
-      color: 'text-pink-500',
-      bg: 'bg-pink-500/10'
-    },
-    {
-      label: 'Students Helped',
-      value: '117+',
-      icon: Users,
-      color: 'text-blue-500',
-      bg: 'bg-blue-500/10'
-    },
-    {
-      label: 'Top Colleges Secured',
-      value: '45+',
-      icon: GraduationCap,
-      color: 'text-primary-500',
-      bg: 'bg-primary-500/10'
-    },
+const Stats = ({ data = [] }) => {
+  // If data is empty, we can show a placeholder or nothing
+  const stats = data.length > 0 ? data : [
+    { label: 'Loading...', value: '-', iconName: 'Users', colorClass: 'text-gray-500', bgClass: 'bg-gray-500/10' }
   ];
 
   return (
     <Section>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-        {stats.map((stat, index) => (
+        {stats.map((stat, index) => {
+          // Dynamically resolve icon
+          let IconComponent = LucideIcons[stat.iconName] || FaIcons[stat.iconName] || LucideIcons.HelpCircle;
+          
+          return (
           <div
             key={index}
             className="
@@ -44,10 +29,9 @@ const Stats = () => {
             {/* Hover Glow */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-[radial-gradient(circle_at_top_left,rgba(245,158,11,0.08),transparent_45%)] pointer-events-none" />
 
-            {/* Icon */}
             <div
               className={`
-                p-5 rounded-2xl ${stat.bg}
+                p-5 rounded-2xl ${stat.bgClass}
                 mb-8
                 group-hover:scale-110
                 group-hover:rotate-6
@@ -55,7 +39,7 @@ const Stats = () => {
                 border border-white/10
               `}
             >
-              <stat.icon className={stat.color} size={40} />
+              <IconComponent className={stat.colorClass} size={40} />
             </div>
 
             {/* Value */}
@@ -68,7 +52,8 @@ const Stats = () => {
               {stat.label}
             </p>
           </div>
-        ))}
+          );
+        })}
       </div>
     </Section>
   );

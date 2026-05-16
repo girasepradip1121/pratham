@@ -12,7 +12,7 @@ import Button from '../ui/Button';
 
 const Hero = ({ onCtaClick }) => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 overflow-hidden">
+    <section className="relative min-h-[90vh] lg:min-h-screen flex items-center justify-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-20 bg-background" />
 

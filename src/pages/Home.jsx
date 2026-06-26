@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import Hero from '../components/sections/Hero';
@@ -8,20 +9,23 @@ import Process from '../components/sections/Process';
 import Roadmap from '../components/sections/Roadmap';
 import Pricing from '../components/sections/Pricing';
 import FAQ from '../components/sections/FAQ';
-import InquiryForm from '../components/ui/InquiryForm';
 import AuthModal from '../components/auth/AuthModal';
+import API_BASE_URL from '../config/api';
 
 const Home = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const scrollTimerRef = useRef(null);
   const hasShownAuthRef = useRef(false);
+  const navigate = useNavigate();
 
   const [cmsData, setCmsData] = useState({
     stats: [], faqs: [], processSteps: [], roadmapSteps: [], pricingPlans: [], creatorProfiles: []
   });
 
   const toggleForm = () => setIsFormOpen(!isFormOpen);
+  const openAuth = () => setIsAuthOpen(true);
+  const handlePricingCta = (planName) => navigate(`/plan-confirmation?plan=${encodeURIComponent(planName)}`);
 
   // Fetch CMS Data
   useEffect(() => {
@@ -41,6 +45,7 @@ const Home = () => {
         hasShownAuthRef.current = true;
       }, 3000);
     };
+    window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
@@ -49,21 +54,19 @@ const Home = () => {
 
   return (
     <div className="relative min-h-[90vh] lg:min-h-screen bg-background">
-      <Navbar onContactClick={toggleForm} />
+      <Navbar onContactClick={openAuth} />
 
       <main>
-        <Hero onCtaClick={toggleForm} />
+        <Hero onCtaClick={openAuth} />
         <Stats data={cmsData.stats} />
         <Process data={cmsData.processSteps} />
         <Creator data={cmsData.creatorProfiles} />
         <Roadmap data={cmsData.roadmapSteps} />
-        <Pricing data={cmsData.pricingPlans} onCtaClick={toggleForm} />
+        <Pricing data={cmsData.pricingPlans} onCtaClick={handlePricingCta} />
         <FAQ data={cmsData.faqs} />
       </main>
 
       <Footer />
-
-      <InquiryForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} defaultTab="login" />
     </div>
   );

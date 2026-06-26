@@ -15,12 +15,12 @@ const Roadmap = ({ data = [] }) => {
         {/* Heading */}
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-white tracking-tight">
-            तुमचा प्रवेशाचा{' '}
-            <span className="text-accent-gradient italic">प्रवास</span>
+            Your Admission{' '}
+            <span className="text-accent-gradient italic">Journey</span>
           </h2>
 
           <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-            रिझल्टपासून ते कॉलेजमध्ये जाईपर्यंतचा प्रत्येक टप्पा आम्ही सोपा करू.
+            We will simplify every single step from results to college admission.
           </p>
         </div>
 

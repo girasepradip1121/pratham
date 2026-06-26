@@ -1,49 +1,134 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback
+} from 'react';
 
-export const AuthContext = createContext({
-  user: null,
-  login: async () => {},
-  signup: async () => {},
-  logout: () => {}
-});
+import API_BASE_URL from '../config/api';
+
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
 
-  // Load user from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('auth_user');
-    if (stored) setUser(JSON.parse(stored));
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(
+    localStorage.getItem('studentToken') || null
+  );
+
+  const [loading, setLoading] = useState(true);
+
+  // =========================
+  // LOGOUT
+  // =========================
+  const logout = useCallback(() => {
+    localStorage.removeItem('studentToken');
+    setToken(null);
+    setUser(null);
   }, []);
 
-  const login = async ({ email, password }) => {
-    // Simple mock validation: accept any non‑empty fields
-    if (!email || !password) {
-      throw new Error('Email and password are required');
+  // =========================
+  // FETCH PROFILE
+  // =========================
+  const fetchProfile = useCallback(async (authToken) => {
+
+    try {
+
+      const res = await fetch(`${API_BASE_URL}/api/student/me`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      });
+
+      if (!res.ok) {
+        logout();
+        return null;
+      }
+
+      const data = await res.json();
+
+      setUser(data);
+
+      return data;
+
+    } catch (error) {
+
+      console.error('Profile Fetch Error:', error);
+
+      logout();
+
+      return null;
     }
-    const mockUser = { email, name: 'Demo User' };
-    localStorage.setItem('auth_user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    return mockUser;
+
+  }, [logout]);
+
+  // =========================
+  // RESTORE LOGIN
+  // =========================
+  useEffect(() => {
+
+    const restoreSession = async () => {
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      await fetchProfile(token);
+
+      setLoading(false);
+    };
+
+    restoreSession();
+
+  }, [token, fetchProfile]);
+
+  // =========================
+  // GOOGLE LOGIN
+  // =========================
+  const googleLogin = async (googleToken, googleProfile = null) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/student/google-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: googleToken,
+          profile: googleProfile
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Google login failed');
+      }
+
+      localStorage.setItem('studentToken', data.token);
+      setToken(data.token);
+      const profile = await fetchProfile(data.token);
+      return profile;
+    } catch (error) {
+      console.error('Google Login Error:', error);
+      throw error;
+    }
   };
 
-  const signup = async ({ name, email, password, phone }) => {
-    if (!name || !email || !password) {
-      throw new Error('Name, email and password are required');
-    }
-    const newUser = { name, email, phone };
-    localStorage.setItem('auth_user', JSON.stringify(newUser));
-    setUser(newUser);
-    return newUser;
-  };
-
-  const logout = () => {
-    localStorage.removeItem('auth_user');
-    setUser(null);
+  // =========================
+  // CONTEXT VALUE
+  // =========================
+  const value = {
+    user,
+    token,
+    loading,
+    googleLogin,
+    logout,
+    fetchProfile
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

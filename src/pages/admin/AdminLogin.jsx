@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Lock } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import API_BASE_URL from '../../config/api';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
@@ -17,7 +18,7 @@ const AdminLogin = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-      
+
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem('adminToken', data.token);
@@ -34,7 +35,7 @@ const AdminLogin = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="glass p-8 rounded-3xl max-w-md w-full border border-white/10 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 blur-[80px] rounded-full pointer-events-none" />
-        
+
         <div className="flex flex-col items-center mb-8 relative z-10">
           <div className="w-16 h-16 bg-primary-500/20 rounded-2xl flex items-center justify-center mb-4 text-primary-500">
             <Shield size={32} />
@@ -53,8 +54,8 @@ const AdminLogin = () => {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
             <div className="relative">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary-500"
@@ -62,13 +63,13 @@ const AdminLogin = () => {
               />
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-surface border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-primary-500"

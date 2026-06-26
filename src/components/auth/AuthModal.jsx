@@ -1,173 +1,173 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Button from '../ui/Button';
-import { X, Mail, User, Phone, Lock, Globe } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Sparkles } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 
-const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  const { login, signup } = useContext(AuthContext);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: ''
-  });
+import logoImg from '../../assets/image.png';
+
+const AuthModal = ({ isOpen, onClose }) => {
+  const { googleLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // Initialize Google Login Button in the Modal when open
+  useEffect(() => {
+    if (!isOpen) return;
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setError('');
-    try {
-      if (activeTab === 'login') {
-        await login({ email: formData.email, password: formData.password });
-      } else {
-        await signup(formData);
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleLoginResponse
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("modalGoogleBtn"),
+          { theme: "filled_dark", size: "large", width: "100%", text: "signin_with" }
+        );
       }
-      onClose();
+    };
+
+    const timer = setTimeout(initGoogle, 500);
+    return () => clearTimeout(timer);
+  }, [isOpen]);
+
+  const handleGoogleLoginResponse = async (response) => {
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await googleLogin(response.credential);
+      setSuccess('Logged in successfully!');
+      setTimeout(() => {
+        onClose();
+        navigate('/student/profile');
+      }, 1000);
     } catch (err) {
-      setError(err.message || 'Something went wrong');
+      setError(err.message || 'Google Login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Placeholder social login handlers
-  const handleGoogle = () => alert('Google login coming soon');
-  const handleApple = () => alert('Apple login coming soon');
+  const handleMockGoogleLogin = async () => {
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const mockProfile = {
+        email: "student@demo.com",
+        name: "Demo Student",
+        googleId: "mock-google-id-99999"
+      };
+      await googleLogin('mock-token-123', mockProfile);
+      setSuccess('Logged in as Demo Student!');
+      setTimeout(() => {
+        onClose();
+        navigate('/student/profile');
+      }, 1000);
+    } catch (err) {
+      setError(err.message || 'Mock login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="bg-gray-900 text-white rounded-2xl p-6 w-full max-w-md shadow-xl glassmorphism"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0, y: 30 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 30 }}
+            transition={{ duration: 0.25 }}
+            className="
+              relative w-full max-w-md 
+              rounded-3xl border border-white/10 
+              bg-gray-900 text-white 
+              shadow-2xl overflow-hidden
+              p-6 flex flex-col items-center text-center
+            "
           >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">
-                {activeTab === 'login' ? 'Login' : 'Sign Up'}
-              </h2>
-              <button onClick={onClose} className="p-1 hover:text-primary-400">
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-primary-500/10 blur-3xl rounded-full pointer-events-none" />
+
+            {/* HEADER */}
+            <div className="w-full flex justify-end mb-2">
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+              >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Tab Switch */}
-            <div className="flex mb-4 space-x-2">
-              <Button
-                variant={activeTab === 'login' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setActiveTab('login')}
-              >
-                Login
-              </Button>
-              <Button
-                variant={activeTab === 'signup' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setActiveTab('signup')}
-              >
-                Sign Up
-              </Button>
+            {/* Logo/Icon */}
+            <div className="flex items-center gap-2.5 mb-4">
+              <img 
+                src={logoImg} 
+                alt="CET Counselling Logo" 
+                className="h-10 w-auto object-contain" 
+              />
+              <div className="flex flex-col justify-center text-left">
+                <span className="text-base font-extrabold tracking-wider text-white leading-none uppercase">
+                  PRATHAM
+                </span>
+                <span className="text-[8px] font-bold tracking-[0.25em] text-primary-500 uppercase leading-none mt-1">
+                  MENTORSHIP
+                </span>
+              </div>
             </div>
 
+            <h2 className="text-2xl font-serif font-bold mb-2">
+              Welcome to CET Counselling
+            </h2>
+            <p className="text-sm text-gray-400 mb-6 px-4">
+              Access your personalized choice lists, track CAP round milestones, and book 1-on-1 expert sessions.
+            </p>
+
+            {/* ALERTS */}
             {error && (
-              <div className="bg-red-600/20 text-red-300 p-2 rounded mb-3 text-sm">
+              <div className="w-full bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm mb-4">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {activeTab === 'signup' && (
-                <>
-                  <div className="flex items-center space-x-2 border-b border-gray-700 pb-1">
-                    <User size={18} className="text-gray-400" />
-                    <input
-                      name="name"
-                      type="text"
-                      placeholder="Full Name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="bg-transparent focus:outline-none w-full"
-                      required
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2 border-b border-gray-700 pb-1">
-                    <Phone size={18} className="text-gray-400" />
-                    <input
-                      name="phone"
-                      type="tel"
-                      placeholder="Phone Number"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="bg-transparent focus:outline-none w-full"
-                      required
-                    />
-                  </div>
-                </>
-              )}
-              <div className="flex items-center space-x-2 border-b border-gray-700 pb-1">
-                <Mail size={18} className="text-gray-400" />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bg-transparent focus:outline-none w-full"
-                  required
-                />
+            {success && (
+              <div className="w-full bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-xl text-sm mb-4">
+                {success}
               </div>
-              <div className="flex items-center space-x-2 border-b border-gray-700 pb-1">
-                <Lock size={18} className="text-gray-400" />
-                <input
-                  name="password"
-                  type="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="bg-transparent focus:outline-none w-full"
-                  required
-                />
-              </div>
+            )}
 
-              <Button type="submit" variant="primary" className="w-full">
-                {activeTab === 'login' ? 'Log In' : 'Create Account'}
-              </Button>
-            </form>
+            {/* LOGIN BUTTONS */}
+            <div className="w-full space-y-4">
+              <div
+                id="modalGoogleBtn"
+                className="w-full min-h-[42px] overflow-hidden rounded-xl flex justify-center"
+              />
 
-            <div className="mt-6 text-center space-y-2">
-              <p className="text-gray-400 text-sm">Or continue with</p>
-              <div className="flex justify-center space-x-4">
-                <button
-                  onClick={handleGoogle}
-                  className="p-2 bg-white/10 rounded-full hover:bg-white/20"
-                >
-                  <Globe size={20} className="text-white" />
-                </button>
-                <button
-                  onClick={handleApple}
-                  className="p-2 bg-white/10 rounded-full hover:bg-white/20"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-5 h-5 text-white"
-                    fill="currentColor"
-                  >
-                    <path d="M16.365 1.43c0 1.14-.46 2.35-1.31 3.24-.86.94-2.12 1.58-3.33 1.48-0.05-1.13.45-2.34 1.31-3.24.9-.93 2.2-1.58 3.33-1.48zM20.56 13.9c-.24-.58-.53-1.12-.85-1.63-1.13-1.73-2.69-3.2-4.57-4.28.02.18.04.36.04.55 0 1.44-.55 2.85-1.51 3.95-.96 1.1-2.28 1.78-3.68 1.88-.13 1.46.23 2.76.99 3.85.75 1.09 2.02 2.09 3.49 2.12 1.43.03 2.96-.84 3.77-2.09 1.03-1.61 1.27-3.58.77-5.22z" />
-                  </svg>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleMockGoogleLogin}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 bg-primary-500/10 border border-primary-500/25 text-primary-400 hover:bg-primary-500/20 py-3 rounded-xl text-sm font-semibold transition-all"
+              >
+                <Sparkles size={16} />
+                Instant Demo Sign In
+              </button>
             </div>
+
+            <p className="text-[10px] text-gray-500 mt-6 px-6">
+              By continuing, you agree to our Terms of Service and Privacy Policy. Secure access via Google accounts only.
+            </p>
           </motion.div>
         </motion.div>
       )}

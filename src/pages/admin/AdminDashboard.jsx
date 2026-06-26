@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, BarChart2, CreditCard, HelpCircle, GitMerge, LayoutDashboard, UserCircle, LogOut, Shield } from 'lucide-react';
+import { Users, BarChart2, CreditCard, HelpCircle, GitMerge, LayoutDashboard, UserCircle, LogOut, Shield, FileText, GraduationCap, Menu } from 'lucide-react';
+import API_BASE_URL from '../../config/api';
 
 // Subcomponents could be separated, but for speed, we'll keep simple versions here.
 const StudentsManager = ({ token }) => {
   const [students, setStudents] = useState([]);
   const [viewStudent, setViewStudent] = useState(null);
+
+  const [assignedCounsellor, setAssignedCounsellor] = useState('');
+  const [counsellingNotes, setCounsellingNotes] = useState('');
+  const [counsellingStatus, setCounsellingStatus] = useState('Pending');
+  const [whatsappGroupLink, setWhatsappGroupLink] = useState('');
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/admin/students`, {
@@ -15,6 +21,15 @@ const StudentsManager = ({ token }) => {
       .then(data => setStudents(data))
       .catch(console.error);
   }, [token]);
+
+  useEffect(() => {
+    if (viewStudent) {
+      setAssignedCounsellor(viewStudent.assignedCounsellor || 'Pradip Girase');
+      setCounsellingNotes(viewStudent.counsellingNotes || '');
+      setCounsellingStatus(viewStudent.counsellingStatus || 'Pending');
+      setWhatsappGroupLink(viewStudent.whatsappGroupLink || '');
+    }
+  }, [viewStudent]);
 
   const togglePaymentStatus = async (student) => {
     const newStatus = student.paymentStatus === 'Paid' ? 'Pending' : 'Paid';
@@ -31,6 +46,35 @@ const StudentsManager = ({ token }) => {
         setStudents(students.map(s => s.id === student.id ? { ...s, paymentStatus: newStatus } : s));
       }
     } catch (err) { console.error(err) }
+  };
+
+  const handleSaveCounselling = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/students/${viewStudent.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          assignedCounsellor,
+          counsellingNotes,
+          counsellingStatus,
+          whatsappGroupLink
+        })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setStudents(students.map(s => s.id === viewStudent.id ? updated : s));
+        setViewStudent(null);
+        alert('Student counselling details updated successfully!');
+      } else {
+        alert('Failed to update details');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error updating details');
+    }
   };
 
   return (
@@ -139,9 +183,261 @@ const StudentsManager = ({ token }) => {
                 <p className="text-white font-medium">{viewStudent.message || '-'}</p>
               </div>
             </div>
+
+            {/* Admin Counselling Controls */}
+            <div className="mt-8 border-t border-white/10 pt-6 space-y-4">
+              <h4 className="text-lg font-bold text-white font-serif">Counselling & WhatsApp Settings</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Assigned Counsellor</label>
+                  <input
+                    type="text"
+                    value={assignedCounsellor}
+                    onChange={e => setAssignedCounsellor(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Counselling Status</label>
+                  <select
+                    value={counsellingStatus}
+                    onChange={e => setCounsellingStatus(e.target.value)}
+                    className="w-full bg-[#071028] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+                  >
+                    <option value="Pending" className="bg-[#071028] text-white">Pending</option>
+                    <option value="InProgress" className="bg-[#071028] text-white">InProgress</option>
+                    <option value="Completed" className="bg-[#071028] text-white">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">WhatsApp Group Link</label>
+                <input
+                  type="text"
+                  value={whatsappGroupLink}
+                  onChange={e => setWhatsappGroupLink(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+                  placeholder="https://chat.whatsapp.com/..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Counselling Notes (Admin Only)</label>
+                <textarea
+                  rows={3}
+                  value={counsellingNotes}
+                  onChange={e => setCounsellingNotes(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+                  placeholder="Add private counselling notes about college choices, follow-up schedule..."
+                />
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button
+                  onClick={handleSaveCounselling}
+                  className="bg-primary-500 hover:bg-primary-600 text-black font-bold px-6 py-3 rounded-xl transition-all"
+                >
+                  Save Counselling Details
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
+    </div>
+  );
+};
+const DocumentsManager = ({ token }) => {
+  const [documents, setDocuments] = useState([]);
+  const [file, setFile] = useState(null);
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('General');
+  const [description, setDescription] = useState('');
+  const [visibility, setVisibility] = useState('All');
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/documents`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setDocuments(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file) return alert('Please select a file');
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', title);
+    formData.append('category', category);
+    formData.append('description', description);
+    formData.append('visibility', visibility);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/documents/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      if (res.ok) {
+        alert('File uploaded successfully!');
+        setTitle('');
+        setDescription('');
+        setFile(null);
+        document.getElementById('file-input').value = '';
+        fetchDocuments();
+      } else {
+        const errData = await res.json();
+        alert(errData.message || 'Upload failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this document?')) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/documents/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) fetchDocuments();
+    } catch (err) { console.error(err); }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="glass p-6 rounded-3xl border border-white/10">
+        <h3 className="text-2xl font-bold text-white mb-6">Upload Document</h3>
+        <form onSubmit={handleUpload} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Document Title</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. CAP Round 1 Cutoffs"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Category</label>
+              <select
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                className="w-full bg-[#071028] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+              >
+                <option value="Cutoffs" className="bg-[#071028] text-white">Cutoffs</option>
+                <option value="Syllabus" className="bg-[#071028] text-white">Syllabus</option>
+                <option value="Guidelines" className="bg-[#071028] text-white">Guidelines</option>
+                <option value="General" className="bg-[#071028] text-white">General</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Select File (PDF, Image, etc.)</label>
+              <input
+                type="file"
+                required
+                id="file-input"
+                onChange={e => setFile(e.target.files[0])}
+                className="w-full text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Plan Visibility</label>
+              <select
+                value={visibility}
+                onChange={e => setVisibility(e.target.value)}
+                className="w-full bg-[#071028] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+              >
+                <option value="All" className="bg-[#071028] text-white">All Students</option>
+                <option value="Silver" className="bg-[#071028] text-white">Silver Plan Only</option>
+                <option value="Platinum" className="bg-[#071028] text-white">Platinum Plan Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-400 mb-2 block">Description</label>
+            <textarea
+              rows={2}
+              placeholder="Provide a brief description of the document..."
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={uploading}
+            className="bg-primary-500 hover:bg-primary-600 text-black font-bold px-6 py-3 rounded-xl transition-all"
+          >
+            {uploading ? 'Uploading...' : 'Upload Document'}
+          </button>
+        </form>
+      </div>
+
+      <div className="glass p-6 rounded-3xl border border-white/10">
+        <h3 className="text-2xl font-bold text-white mb-6">Uploaded Documents</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-gray-400 border-b border-white/10">
+              <tr>
+                <th className="pb-3 px-4">Title</th>
+                <th className="pb-3 px-4">Category</th>
+                <th className="pb-3 px-4">Type</th>
+                <th className="pb-3 px-4">Visibility</th>
+                <th className="pb-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {documents.filter(d => !d.studentId).map(d => (
+                <tr key={d.id} className="border-b border-white/5 hover:bg-white/5">
+                  <td className="py-4 px-4 text-white font-medium">{d.title}</td>
+                  <td className="py-4 px-4 text-gray-300">{d.category}</td>
+                  <td className="py-4 px-4 text-gray-400 uppercase font-mono text-xs">{d.type}</td>
+                  <td className="py-4 px-4 text-gray-300">{d.visibility}</td>
+                  <td className="py-4 px-4">
+                    <div className="flex items-center justify-end gap-3">
+                      <a href={`${API_BASE_URL}${d.url}`} target="_blank" rel="noreferrer" className="text-primary-400 hover:underline text-xs">
+                        View
+                      </a>
+                      <button onClick={() => handleDelete(d.id)} className="text-red-400 hover:text-red-300 transition-colors">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {documents.filter(d => !d.studentId).length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-gray-500">No admin documents uploaded yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
@@ -403,11 +699,34 @@ const schemas = {
     { key: 'role', type: 'text' },
     { key: 'description', type: 'textarea' },
     { key: 'imageUrl', type: 'text', optional: true }
+  ],
+  colleges: [
+    { key: 'collegeName', type: 'text' },
+    { key: 'collegeCode', type: 'text' },
+    { key: 'stream', type: 'text' },
+    { key: 'city', type: 'text' },
+    { key: 'fees', type: 'number', optional: true },
+    { key: 'autonomousStatus', type: 'text' },
+    { key: 'naacGrade', type: 'text', optional: true },
+    { key: 'placement', type: 'number', optional: true },
+    { key: 'seatIntake', type: 'number', optional: true },
+    { key: 'status', type: 'text' }
+  ],
+  callSchedules: [
+    { key: 'studentId', type: 'number' },
+    { key: 'title', type: 'text' },
+    { key: 'description', type: 'textarea', optional: true },
+    { key: 'scheduledAt', type: 'text' },
+    { key: 'scheduledTime', type: 'text', optional: true },
+    { key: 'meetLink', type: 'text', optional: true },
+    { key: 'planVisibility', type: 'text' },
+    { key: 'status', type: 'text' }
   ]
 };
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('students');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('adminToken');
 
@@ -422,6 +741,9 @@ const AdminDashboard = () => {
 
   const tabs = [
     { id: 'students', name: 'Students & Payments', icon: Users },
+    { id: 'documents', name: 'Documents Manager', icon: FileText },
+    { id: 'colleges', name: 'Colleges Manager', icon: GraduationCap },
+    { id: 'meetings', name: 'Meetings Scheduler', icon: HelpCircle },
     { id: 'stats', name: 'Stats Manager', icon: BarChart2 },
     { id: 'pricing', name: 'Pricing Plans', icon: CreditCard },
     { id: 'faqs', name: 'FAQs Manager', icon: HelpCircle },
@@ -431,9 +753,9 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-64 glass border-r border-white/10 flex flex-col h-screen sticky top-0">
+    <div className="min-h-screen bg-background flex relative">
+      {/* Desktop Sidebar */}
+      <aside className="w-64 glass border-r border-white/10 flex-col h-screen sticky top-0 hidden lg:flex">
         <div className="p-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Shield className="text-primary-500" size={24} />
@@ -460,15 +782,86 @@ const AdminDashboard = () => {
         </div>
       </aside>
 
+      {/* Mobile Drawer Overlay Backdrop */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm lg:hidden transition-all duration-300"
+        />
+      )}
+
+      {/* Mobile Drawer Content */}
+      <aside
+        className={`fixed left-0 top-0 h-screen w-64 bg-[#071028] border-r border-white/10 z-50 flex flex-col justify-between transition-transform duration-300 transform lg:hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+      >
+        <div>
+          <div className="p-6 flex items-center justify-between border-b border-white/5">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <Shield className="text-primary-500" size={24} />
+              Admin Panel
+            </h2>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <nav className="px-4 py-4 space-y-2 overflow-y-auto max-h-[calc(100vh-140px)]">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setIsSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === tab.id ? 'bg-primary-500/20 text-primary-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                  }`}
+              >
+                <tab.icon size={18} />
+                {tab.name}
+              </button>
+            ))}
+          </nav>
+        </div>
+        <div className="p-4 border-t border-white/10">
+          <button
+            onClick={() => {
+              setIsSidebarOpen(false);
+              handleLogout();
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+          >
+            <LogOut size={18} /> Logout
+          </button>
+        </div>
+      </aside>
+
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto h-screen">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto h-screen">
         <div className="max-w-6xl mx-auto">
           <header className="mb-8">
-            <h1 className="text-3xl font-serif font-bold text-white">Dashboard</h1>
-            <p className="text-gray-400">Manage your platform content dynamically.</p>
+            <div className="flex items-center gap-3">
+              {/* Mobile Sidebar Hamburger Trigger */}
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all lg:hidden"
+                aria-label="Open Navigation Drawer"
+              >
+                <Menu size={20} />
+              </button>
+              <div>
+                <h1 className="text-3xl font-serif font-bold text-white">Dashboard</h1>
+                <p className="text-gray-400 text-sm mt-1">Manage your platform content dynamically.</p>
+              </div>
+            </div>
           </header>
 
           {activeTab === 'students' && <StudentsManager token={token} />}
+          {activeTab === 'documents' && <DocumentsManager token={token} />}
+          {activeTab === 'colleges' && <GenericCMSManager title="Colleges" endpoint="/api/admin/colleges" token={token} fields={schemas.colleges} />}
+          {activeTab === 'meetings' && <GenericCMSManager title="Meetings" endpoint="/api/admin/call-schedules" token={token} fields={schemas.callSchedules} />}
           {activeTab === 'stats' && <GenericCMSManager title="Stats" endpoint="/api/admin/stats" token={token} fields={schemas.stats} />}
           {activeTab === 'pricing' && <GenericCMSManager title="Pricing" endpoint="/api/admin/pricing-plans" token={token} fields={schemas.pricing} />}
           {activeTab === 'faqs' && <GenericCMSManager title="FAQs" endpoint="/api/admin/faqs" token={token} fields={schemas.faqs} />}

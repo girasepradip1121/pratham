@@ -44,9 +44,9 @@ const Creator = ({ data = [] }) => {
                 <Quote className="text-primary-500/20 w-8 h-8 sm:w-10 sm:h-10 mb-5" />
 
                 <p className="text-xl sm:text-2xl md:text-3xl xl:text-[2.1rem] leading-[1.5] font-serif italic text-white/90 max-w-[95%]">
-                  “CET नंतर मलाही खूप confuse वाटलं होतं —
-                  कोणती college? कोणता branch?
-                  मी त्याच confusion मधून आलोय.”
+                  “After CET, even I felt very confused —
+                  Which college? Which branch?
+                  I have gone through the exact same confusion.”
                 </p>
               </div>
 
@@ -98,36 +98,35 @@ const Creator = ({ data = [] }) => {
 
             {/* Heading */}
             <h2 className="text-4xl sm:text-5xl md:text-6xl xl:text-[5rem] font-bold text-white leading-[1.02] tracking-tight mb-8 text-center lg:text-left">
-              मी {creator.name} — <br />
-              तुझा Trusted Senior
+              I am {creator.name} — <br />
+              Your Trusted Senior
             </h2>
 
             {/* Description */}
             <div className="space-y-6 text-gray-400 text-base sm:text-lg md:text-xl leading-relaxed font-light text-center lg:text-left">
               <p>
-                मी एक engineering student आणि content creator आहे.
-                माझे{' '}
+                I am an engineering student and content creator.
+                I have{' '}
                 <span className="text-primary-400 font-semibold">
                   90,000+ followers
                 </span>{' '}
-                आहेत Instagram वर.
+                on Instagram.
               </p>
 
               <p>
-                CET नंतर मला योग्य guidance मिळाली नव्हती.
-                म्हणून मी ठरवलं की मी तो senior बनेन जो{' '}
+                I did not receive proper guidance after CET.
+                So I decided to become that senior who will guide you{' '}
                 <span className="text-primary-400 font-semibold">
-                  honestly आणि clearly
-                </span>{' '}
-                सांगेल.
+                  honestly and clearly
+                </span>.
               </p>
 
               <p>
-                आतापर्यंत{' '}
+                Guided{' '}
                 <span className="text-primary-400 font-semibold">
                   500+ students
                 </span>{' '}
-                ना guide केलंय. आता तुझी वेळ आहे.
+                so far. Now it's your turn.
               </p>
             </div>
 

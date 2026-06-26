@@ -1,4 +1,5 @@
 import { FaInstagram, FaYoutube, FaTwitter, FaWhatsapp } from 'react-icons/fa6';
+import logoImg from '../../assets/image.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -17,9 +18,21 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-12 pb-12 border-b border-white/5">
           <div className="max-w-xs">
-            <h2 className="text-3xl font-bold text-white mb-4 tracking-tighter">
-              PRATHAMESH<span className="text-primary-500 italic">CET</span>
-            </h2>
+            <a href="/" className="flex items-center gap-2.5 group mb-4">
+              <img 
+                src={logoImg} 
+                alt="CET Counselling Logo" 
+                className="h-9 w-auto object-contain" 
+              />
+              <div className="flex flex-col justify-center">
+                <span className="text-base font-extrabold tracking-wider text-white leading-none uppercase">
+                  PRATHAM
+                </span>
+                <span className="text-[8px] font-bold tracking-[0.25em] text-primary-500 uppercase leading-none mt-1">
+                  MENTORSHIP
+                </span>
+              </div>
+            </a>
             <p className="text-gray-500 text-sm leading-relaxed">
               Leading the way in Maharashtra engineering & pharmacy admissions guidance. 
               We transform your hard work into your dream college seat.

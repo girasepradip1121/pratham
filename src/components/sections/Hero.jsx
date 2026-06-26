@@ -48,17 +48,17 @@ const Hero = ({ onCtaClick }) => {
 
             {/* Heading */}
             <h1 className="text-[42px] xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold mb-6 sm:mb-8 leading-[1.05] tracking-tight">
-              Maharashtra's Best <br />
+              Maharashtra’s Most <br />
               <span className="text-accent-gradient italic">
-                Counselling
+                Affordable Engineering
               </span>{' '}
-              Platform
+              Admission Counselling
             </h1>
 
             {/* Description */}
             <p className="text-gray-400 text-base sm:text-lg md:text-xl mb-10 sm:mb-12 max-w-2xl mx-auto font-light leading-relaxed px-2">
-              तुमच्या स्वप्नातील कॉलेज आणि ब्रांच निवडण्यासाठी आम्ही तुम्हाला मदत करू.
-              आमच्या तज्ञ मार्गदर्शनाखाली तुमची प्रवेश प्रक्रिया सोपी आणि सुरक्षित करा.
+              We will help you choose your dream college and branch.
+              Simplify and secure your admission process under our expert guidance.
             </p>
           </motion.div>
 
@@ -84,7 +84,7 @@ const Hero = ({ onCtaClick }) => {
             >
               <MessageCircle className="w-5 h-5" />
 
-              <span>WhatsApp वर चर्चा करा</span>
+              <span>Chat on WhatsApp</span>
 
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -97,7 +97,7 @@ const Hero = ({ onCtaClick }) => {
             >
               <Play className="w-5 h-5 fill-current" />
 
-              <span>प्लॅन्स पहा</span>
+              <span>View Plans</span>
             </Button>
           </motion.div>
 
@@ -152,7 +152,7 @@ const Hero = ({ onCtaClick }) => {
                 <div className="grid grid-cols-3 w-full gap-2 sm:gap-4">
                   <div className="text-center">
                     <div className="text-2xl sm:text-3xl font-bold text-primary-400 mb-1">
-                      90K+
+                      101K+
                     </div>
 
                     <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
@@ -162,7 +162,7 @@ const Hero = ({ onCtaClick }) => {
 
                   <div className="text-center border-x border-white/5">
                     <div className="text-2xl sm:text-3xl font-bold text-primary-400 mb-1">
-                      500+
+                      2K+
                     </div>
 
                     <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
@@ -172,9 +172,8 @@ const Hero = ({ onCtaClick }) => {
 
                   <div className="text-center">
                     <div className="text-2xl sm:text-3xl font-bold text-primary-400 mb-1">
-                      200+
+                      151+
                     </div>
-
                     <div className="text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
                       Colleges
                     </div>

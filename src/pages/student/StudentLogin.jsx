@@ -1,41 +1,65 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import { AuthContext } from '../../context/AuthContext';
 
 const StudentLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { googleLogin } = useContext(AuthContext);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  // Load Google Authentication Button
+  useEffect(() => {
+    const initGoogle = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleLoginResponse
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("googleBtnDiv"),
+          { theme: "filled_dark", size: "large", width: "100%", text: "continue_with" }
+        );
+      }
+    };
+
+    const timer = setTimeout(initGoogle, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleGoogleLoginResponse = async (response) => {
     setIsLoading(true);
     setError('');
-
+    setSuccess('');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/student/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem('studentToken', data.token);
-        if (data.student.paymentStatus === 'Paid') {
-          navigate('/dashboard');
-        } else {
-          navigate('/select-plan');
-        }
-      } else {
-        setError(data.message || 'Login failed');
-      }
+      await googleLogin(response.credential);
+      setSuccess('Logged in successfully!');
+      setTimeout(() => navigate('/student/profile'), 1000);
     } catch (err) {
-      setError('Server error. Please try again later.');
+      setError(err.message || 'Google Sign-In failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMockGoogleLogin = async () => {
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const mockProfile = {
+        email: "student@demo.com",
+        name: "Demo Student",
+        googleId: "mock-google-id-99999"
+      };
+      await googleLogin('mock-token-123', mockProfile);
+      setSuccess('Logged in as Demo Student!');
+      setTimeout(() => navigate('/student/profile'), 1000);
+    } catch (err) {
+      setError('Mock login failed. Please check backend connection.');
     } finally {
       setIsLoading(false);
     }
@@ -43,61 +67,48 @@ const StudentLogin = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Elements */}
+      {/* Background Blobs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="glass w-full max-w-md rounded-[2.5rem] border border-white/10 p-8 sm:p-10 relative z-10">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-serif font-bold text-white mb-2">Student Login</h1>
-          <p className="text-gray-400">Welcome back! Please enter your details.</p>
+      <div className="glass w-full max-w-md rounded-[2.5rem] border border-white/10 p-8 sm:p-10 relative z-10 text-center">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-primary-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary-500 border border-primary-500/20">
+            <Sparkles size={32} />
+          </div>
+          <h1 className="text-3xl font-serif font-bold text-white mb-2 font-display">Student Portal</h1>
+          <p className="text-gray-400 text-sm">Sign in securely using Google to view your counselling roadmap.</p>
         </div>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm mb-6 text-center">
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-xs mb-6">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-surface border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-primary-500 transition-colors"
-                placeholder="you@example.com"
-              />
-            </div>
+        {success && (
+          <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-xl text-xs mb-6">
+            {success}
           </div>
+        )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-surface border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-primary-500 transition-colors"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
+        <div className="space-y-4">
+          {/* Google Sign-in Button */}
+          <div id="googleBtnDiv" className="w-full min-h-[44px] flex justify-center"></div>
+          
+          {/* Instant Sandbox Sign-in Demo */}
+          <button
+            type="button"
+            onClick={handleMockGoogleLogin}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-2 bg-primary-500/10 border border-primary-500/25 text-primary-400 hover:bg-primary-500/20 py-3.5 rounded-xl text-sm font-semibold transition-all"
+          >
+            <Sparkles size={16} /> Instant Demo Sign In
+          </button>
+        </div>
 
-          <Button type="submit" disabled={isLoading} className="w-full py-4 text-lg mt-4 group">
-            {isLoading ? 'Signing In...' : 'Sign In'}
-            <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </form>
-
-        <p className="text-center text-gray-400 mt-8 text-sm">
-          Don't have an account? <Link to="/" className="text-primary-400 hover:text-primary-300 font-medium">Sign up on homepage</Link>
+        <p className="text-[11px] text-gray-500 mt-8 px-4">
+          Google verification ensures your personal CAP academic details and choice sheets are encrypted and protected.
         </p>
       </div>
     </div>

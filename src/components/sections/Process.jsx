@@ -26,12 +26,12 @@ const Process = ({ data = [] }) => {
         {/* Heading */}
         <div className="max-w-3xl mb-20 md:mb-28">
           <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8">
-            Counselling कसं <br />
-            काम करतं?
+            How Counselling <br />
+            Works?
           </h2>
 
           <p className="text-gray-400 text-lg md:text-2xl font-light leading-relaxed max-w-2xl">
-            CET result पासून college admission पर्यंत — simple 4 steps मध्ये.
+            From CET results to college admission — in 4 simple steps.
           </p>
         </div>
 

@@ -19,10 +19,10 @@ const FAQ = ({ data = [] }) => {
             <span className="text-xs font-bold tracking-widest text-primary-300 uppercase">Support Center</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-white tracking-tight">
-            वारंवार विचारले जाणारे <span className="text-accent-gradient italic">प्रश्न</span>
+            Frequently Asked <span className="text-accent-gradient italic">Questions</span>
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">
-            तुमच्या मनात काही शंका आहेत? येथे सर्वात सामान्य प्रश्नांची उत्तरे शोधा.
+            Have any doubts? Find answers to the most common questions here.
           </p>
         </div>
         

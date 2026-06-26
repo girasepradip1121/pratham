@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Users, BarChart2, CreditCard, HelpCircle, GitMerge, LayoutDashboard, UserCircle, LogOut, Shield, FileText, GraduationCap, Menu } from 'lucide-react';
+import { Users, BarChart2, CreditCard, HelpCircle, GitMerge, LayoutDashboard, UserCircle, LogOut, Shield, FileText, GraduationCap, Menu, X, Edit2, Trash2, Plus } from 'lucide-react';
 import API_BASE_URL from '../../config/api';
 
 // Subcomponents could be separated, but for speed, we'll keep simple versions here.
@@ -118,69 +119,133 @@ const StudentsManager = ({ token }) => {
         </table>
       </div>
 
-      {viewStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="glass w-full max-w-2xl rounded-[2rem] border border-white/10 p-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-white">Student Details</h3>
-              <button onClick={() => setViewStudent(null)} className="text-gray-400 hover:text-white"><X size={24} /></button>
+      {viewStudent && createPortal(
+        <div 
+          onClick={() => setViewStudent(null)} 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-all duration-300"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="bg-slate-900/95 backdrop-blur-md w-full max-w-3xl rounded-3xl border border-white/10 p-5 sm:p-8 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl relative"
+          >
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <UserCircle className="text-primary-500" size={24} />
+                <h3 className="text-xl sm:text-2xl font-bold text-white">Student Profile Details</h3>
+              </div>
+              <button 
+                onClick={() => setViewStudent(null)} 
+                className="p-1.5 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+              >
+                <X size={20} />
+              </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Full Name</p>
-                <p className="text-white font-medium">{viewStudent.name}</p>
+
+            <div className="space-y-6">
+              {/* Plan & Status Banner */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 text-sm">
+                <div>
+                  <p className="text-gray-500 text-xs uppercase font-medium">Selected Plan</p>
+                  <p className="text-primary-400 font-bold text-base capitalize mt-0.5">{viewStudent.plan || 'None'}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs uppercase font-medium">Payment Status</p>
+                  <span className={`inline-block px-2.5 py-0.5 mt-1 rounded-full text-xs font-semibold ${viewStudent.paymentStatus === 'Paid' ? 'bg-green-500/20 text-green-400 border border-green-500/20' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/20'}`}>
+                    {viewStudent.paymentStatus || 'Pending'}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs uppercase font-medium">Admission Track</p>
+                  <span className="inline-block px-2.5 py-0.5 mt-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/20">
+                    {viewStudent.admissionType === 'Diploma' ? 'Direct 2nd Year (Diploma)' : '1st Year (MHT-CET)'}
+                  </span>
+                </div>
               </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Email</p>
-                <p className="text-white font-medium">{viewStudent.email || '-'}</p>
+
+              {/* Personal Details Section */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Personal & Contact Info</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Full Name</p>
+                    <p className="text-white font-medium break-words">{viewStudent.name}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Email Address</p>
+                    <p className="text-white font-medium break-words">{viewStudent.email || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">WhatsApp Number</p>
+                    <p className="text-white font-medium">{viewStudent.phone}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">City / Region</p>
+                    <p className="text-white font-medium">{viewStudent.city || '-'}</p>
+                  </div>
+                </div>
               </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">WhatsApp</p>
-                <p className="text-white font-medium">{viewStudent.phone}</p>
+
+              {/* Academic Details Section */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Academic Credentials</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Category (Reservation)</p>
+                    <p className="text-white font-medium">{viewStudent.category || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Selected Stream</p>
+                    <p className="text-white font-medium">{viewStudent.stream || '-'}</p>
+                  </div>
+                  {viewStudent.admissionType === 'Diploma' ? (
+                    <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all sm:col-span-2">
+                      <p className="text-gray-500 text-xs uppercase mb-1">Diploma Percentage</p>
+                      <p className="text-white font-medium">{viewStudent.diplomaPercentage || viewStudent.twelfthPercent || '-'}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                        <p className="text-gray-500 text-xs uppercase mb-1">12th percentage</p>
+                        <p className="text-white font-medium">{viewStudent.twelfthPercent || '-'}</p>
+                      </div>
+                      <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                        <p className="text-gray-500 text-xs uppercase mb-1">MHT-CET / JEE Score</p>
+                        <p className="text-white font-medium">{viewStudent.cetScore || '-'}</p>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">City</p>
-                <p className="text-white font-medium">{viewStudent.city || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Category</p>
-                <p className="text-white font-medium">{viewStudent.category || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Stream</p>
-                <p className="text-white font-medium">{viewStudent.stream || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">12th / Diploma %</p>
-                <p className="text-white font-medium">{viewStudent.twelfthPercent || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">CET Score</p>
-                <p className="text-white font-medium">{viewStudent.cetScore || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Preferred Branch</p>
-                <p className="text-white font-medium">{viewStudent.preferredBranch || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Preferred Location</p>
-                <p className="text-white font-medium">{viewStudent.preferredLocation || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Fee Budget</p>
-                <p className="text-white font-medium">{viewStudent.feeBudget || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <p className="text-gray-500 text-xs uppercase mb-1">Contact Time</p>
-                <p className="text-white font-medium">{viewStudent.contactTime || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5 sm:col-span-2">
-                <p className="text-gray-500 text-xs uppercase mb-1">Main Problem</p>
-                <p className="text-white font-medium">{viewStudent.mainProblem || '-'}</p>
-              </div>
-              <div className="bg-white/5 p-4 rounded-xl border border-white/5 sm:col-span-2">
-                <p className="text-gray-500 text-xs uppercase mb-1">Message</p>
-                <p className="text-white font-medium">{viewStudent.message || '-'}</p>
+
+              {/* Preferences Section */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Admission Preferences</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Preferred Branch</p>
+                    <p className="text-white font-medium">{viewStudent.preferredBranch || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Preferred Location</p>
+                    <p className="text-white font-medium">{viewStudent.preferredLocation || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Annual Fee Budget</p>
+                    <p className="text-white font-medium">{viewStudent.feeBudget || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Preferred Contact Time</p>
+                    <p className="text-white font-medium">{viewStudent.contactTime || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all sm:col-span-2">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Primary Problem/Query</p>
+                    <p className="text-white font-medium break-words whitespace-pre-wrap">{viewStudent.mainProblem || '-'}</p>
+                  </div>
+                  <div className="bg-white/5 p-3 sm:p-4 rounded-xl border border-white/5 hover:bg-white/10 transition-all sm:col-span-2">
+                    <p className="text-gray-500 text-xs uppercase mb-1">Message from Student</p>
+                    <p className="text-white font-medium break-words whitespace-pre-wrap">{viewStudent.message || '-'}</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -243,7 +308,8 @@ const StudentsManager = ({ token }) => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -442,7 +508,6 @@ const DocumentsManager = ({ token }) => {
   );
 };
 
-import { Edit2, Trash2, Plus, X } from 'lucide-react';
 
 const GenericCMSManager = ({ title, endpoint, token, fields }) => {
   const [data, setData] = useState([]);
@@ -580,71 +645,85 @@ const GenericCMSManager = ({ title, endpoint, token, fields }) => {
         </table>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass w-full max-w-2xl rounded-3xl border border-white/10 p-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-white">{editingItem ? 'Edit' : 'Add'} {title}</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
-                <X size={24} />
+      {showModal && createPortal(
+        <div 
+          onClick={() => setShowModal(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-all duration-300"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-slate-900/95 border border-white/10 w-full max-w-2xl rounded-3xl p-5 sm:p-8 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl relative"
+          >
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+              <h3 className="text-xl sm:text-2xl font-bold text-white">{editingItem ? 'Edit' : 'Add'} {title}</h3>
+              <button 
+                onClick={() => setShowModal(false)} 
+                className="p-1.5 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+              >
+                <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {fields.map(f => (
-                <div key={f.key} className="space-y-2">
-                  <label className="text-sm font-medium text-gray-400 capitalize">{f.key.replace(/([A-Z])/g, ' $1').trim()}</label>
-                  
-                  {f.type === 'textarea' ? (
-                    <textarea 
-                      required={!f.optional}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
-                      rows="3"
-                      value={formData[f.key] || ''}
-                      onChange={e => setFormData({...formData, [f.key]: e.target.value})}
-                    />
-                  ) : f.type === 'boolean' ? (
-                    <div className="flex items-center gap-3 mt-2">
-                      <input 
-                        type="checkbox" 
-                        checked={formData[f.key] || false}
-                        onChange={e => setFormData({...formData, [f.key]: e.target.checked})}
-                        className="w-5 h-5 accent-primary-500 rounded"
-                      />
-                      <span className="text-gray-300">Enabled</span>
-                    </div>
-                  ) : f.type === 'array' ? (
-                    <div className="space-y-3 bg-white/5 p-4 rounded-xl border border-white/10">
-                      {(formData[f.key] || []).map((val, idx) => (
-                        <div key={idx} className="flex gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                {fields.map(f => {
+                  const isFullWidth = f.type === 'textarea' || f.type === 'array' || f.type === 'boolean';
+                  return (
+                    <div key={f.key} className={`space-y-1.5 ${isFullWidth ? 'sm:col-span-2' : ''}`}>
+                      <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">{f.key.replace(/([A-Z])/g, ' $1').trim()}</label>
+                      
+                      {f.type === 'textarea' ? (
+                        <textarea 
+                          required={!f.optional}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-all"
+                          rows="3"
+                          value={formData[f.key] || ''}
+                          onChange={e => setFormData({...formData, [f.key]: e.target.value})}
+                        />
+                      ) : f.type === 'boolean' ? (
+                        <div className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
                           <input 
-                            type="text"
-                            value={val}
-                            onChange={e => handleArrayChange(f.key, idx, e.target.value)}
-                            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white outline-none"
+                            type="checkbox" 
+                            checked={formData[f.key] || false}
+                            onChange={e => setFormData({...formData, [f.key]: e.target.checked})}
+                            className="w-5 h-5 accent-primary-500 rounded"
                           />
-                          <button type="button" onClick={() => removeArrayItem(f.key, idx)} className="text-red-400 p-2 hover:bg-white/5 rounded-lg">
-                            <Trash2 size={16} />
+                          <span className="text-gray-300">Enabled / Active</span>
+                        </div>
+                      ) : f.type === 'array' ? (
+                        <div className="space-y-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                          {(formData[f.key] || []).map((val, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <input 
+                                type="text"
+                                value={val}
+                                onChange={e => handleArrayChange(f.key, idx, e.target.value)}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white outline-none"
+                              />
+                              <button type="button" onClick={() => removeArrayItem(f.key, idx)} className="text-red-400 p-2 hover:bg-white/5 rounded-lg">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          ))}
+                          <button type="button" onClick={() => addArrayItem(f.key)} className="text-primary-400 text-sm hover:underline mt-2 flex items-center gap-1">
+                            <Plus size={14} /> Add Item
                           </button>
                         </div>
-                      ))}
-                      <button type="button" onClick={() => addArrayItem(f.key)} className="text-primary-400 text-sm hover:underline mt-2 flex items-center gap-1">
-                        <Plus size={14} /> Add Item
-                      </button>
+                      ) : (
+                        <input 
+                          type={f.type === 'number' ? 'number' : 'text'} 
+                          required={!f.optional}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-all"
+                          value={formData[f.key] || ''}
+                          onChange={e => setFormData({...formData, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value})}
+                        />
+                      )}
                     </div>
-                  ) : (
-                    <input 
-                      type={f.type === 'number' ? 'number' : 'text'} 
-                      required={!f.optional}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary-500 outline-none"
-                      value={formData[f.key] || ''}
-                      onChange={e => setFormData({...formData, [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value})}
-                    />
-                  )}
-                </div>
-              ))}
+                  );
+                })}
+              </div>
               
-              <div className="pt-6 flex justify-end gap-3">
+              <div className="pt-6 flex justify-end gap-3 border-t border-white/10">
                 <button type="button" onClick={() => setShowModal(false)} className="px-6 py-3 rounded-xl font-medium text-gray-300 hover:bg-white/5 transition-colors">
                   Cancel
                 </button>
@@ -654,7 +733,8 @@ const GenericCMSManager = ({ title, endpoint, token, fields }) => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

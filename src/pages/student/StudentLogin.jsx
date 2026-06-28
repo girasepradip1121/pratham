@@ -35,9 +35,21 @@ const StudentLogin = () => {
     setError('');
     setSuccess('');
     try {
-      await googleLogin(response.credential);
+      const profile = await googleLogin(response.credential);
       setSuccess('Logged in successfully!');
-      setTimeout(() => navigate('/student/profile'), 1000);
+      setTimeout(() => {
+        const savedPlan = localStorage.getItem('selectedPlan');
+        const isProfileIncomplete = !profile?.phone || !profile?.category || !profile?.city ||
+          (profile?.admissionType === 'CET' ? !profile?.cetScore : !profile?.diplomaPercentage);
+
+        if (isProfileIncomplete) {
+          navigate('/student/profile');
+        } else if (savedPlan) {
+          navigate(`/plan-confirmation?plan=${encodeURIComponent(savedPlan)}`);
+        } else {
+          navigate('/student/profile');
+        }
+      }, 1000);
     } catch (err) {
       setError(err.message || 'Google Sign-In failed');
     } finally {
@@ -55,9 +67,21 @@ const StudentLogin = () => {
         name: "Demo Student",
         googleId: "mock-google-id-99999"
       };
-      await googleLogin('mock-token-123', mockProfile);
+      const profile = await googleLogin('mock-token-123', mockProfile);
       setSuccess('Logged in as Demo Student!');
-      setTimeout(() => navigate('/student/profile'), 1000);
+      setTimeout(() => {
+        const savedPlan = localStorage.getItem('selectedPlan');
+        const isProfileIncomplete = !profile?.phone || !profile?.category || !profile?.city ||
+          (profile?.admissionType === 'CET' ? !profile?.cetScore : !profile?.diplomaPercentage);
+
+        if (isProfileIncomplete) {
+          navigate('/student/profile');
+        } else if (savedPlan) {
+          navigate(`/plan-confirmation?plan=${encodeURIComponent(savedPlan)}`);
+        } else {
+          navigate('/student/profile');
+        }
+      }, 1000);
     } catch (err) {
       setError('Mock login failed. Please check backend connection.');
     } finally {

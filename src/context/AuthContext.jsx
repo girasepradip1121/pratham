@@ -41,7 +41,9 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (!res.ok) {
-        logout();
+        if (res.status === 401 || res.status === 403) {
+          logout();
+        }
         return null;
       }
 
@@ -54,9 +56,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
 
       console.error('Profile Fetch Error:', error);
-
-      logout();
-
       return null;
     }
 

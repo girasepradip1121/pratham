@@ -11,10 +11,12 @@ import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AdminRoute from "./components/routes/AdminRoute";
 import AdvancedPredictor from "./pages/student/AdvancedPredictor";
 import DataIngestion from "./pages/admin/DataIngestion";
+import ScrollToTop from "./components/utils/ScrollToTop";
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
 

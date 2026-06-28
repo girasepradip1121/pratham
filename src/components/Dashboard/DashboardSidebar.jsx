@@ -23,7 +23,7 @@ const DashboardSidebar = ({ plan, isOpen, onClose }) => {
     const location = useLocation();
     const { user, logout } = useContext(AuthContext);
 
-    const isFree = !plan || plan.toUpperCase() === 'FREE';
+    const isFree = (!plan || plan.toUpperCase() === 'FREE') && user?.paymentStatus !== 'Paid';
 
     // Parse active tab from URL search query
     const searchParams = new URLSearchParams(location.search);

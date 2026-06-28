@@ -71,6 +71,12 @@ will reach out to schedule your 1-on-1 session.
 
 const StudentDashboard = ({ defaultTab }) => {
   const { user: profile, loading, fetchProfile, token } = useContext(AuthContext);
+  
+  const savedPlanName = localStorage.getItem('selectedPlan') || 'Silver Guidance';
+  const isPlatinumPlan = savedPlanName.toLowerCase().includes('platinum');
+  const activePlanPrice = isPlatinumPlan ? 1999 : 999;
+  const activePlanName = isPlatinumPlan ? 'Platinum Counselling' : 'Silver Guidance';
+
   const [paymentMethod, setPaymentMethod] = useState(null); // 'razorpay' or 'manual'
   const [recommendedColleges, setRecommendedColleges] = useState([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
@@ -205,18 +211,18 @@ const StudentDashboard = ({ defaultTab }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ amount: 999, planName: 'SILVER' })
+        body: JSON.stringify({ amount: activePlanPrice, planName: activePlanName })
       });
       const order = await orderRes.json();
-
+ 
       if (!orderRes.ok) throw new Error('Could not create order');
-
+ 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_1234567890",
         amount: order.amount,
         currency: order.currency,
         name: "CET Counselling",
-        description: "Premium Counselling Plan",
+        description: `Premium Counselling - ${activePlanName}`,
         order_id: order.orderId,
         handler: async function (response) {
           await fetch(`${API_BASE_URL}/api/student/verify-payment`, {
@@ -229,16 +235,16 @@ const StudentDashboard = ({ defaultTab }) => {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature,
-              amount: 999,
-              planName: 'SILVER',
+              amount: activePlanPrice,
+              planName: activePlanName,
               sandbox: order.sandbox
             })
           });
           await fetchProfile(token); // Update context profile state
           localStorage.setItem('receiptId', `REC-${Math.floor(100000 + Math.random() * 900000)}`);
           localStorage.setItem('transactionId', response.razorpay_payment_id);
-          localStorage.setItem('paymentAmount', '999');
-          localStorage.setItem('selectedPlan', 'SILVER');
+          localStorage.setItem('paymentAmount', activePlanPrice.toString());
+          localStorage.setItem('selectedPlan', activePlanName);
           navigate('/payment-success');
         },
         prefill: {
@@ -250,7 +256,7 @@ const StudentDashboard = ({ defaultTab }) => {
           color: "#f59e0b"
         }
       };
-
+ 
       if (order.sandbox) {
         // Automatically bypass signature verification for sandbox fallback
         await fetch(`${API_BASE_URL}/api/student/verify-payment`, {
@@ -263,25 +269,25 @@ const StudentDashboard = ({ defaultTab }) => {
             razorpay_payment_id: `pay_sand_${Date.now()}`,
             razorpay_order_id: order.orderId,
             razorpay_signature: 'sandbox_sig',
-            amount: 999,
-            planName: 'SILVER',
+            amount: activePlanPrice,
+            planName: activePlanName,
             sandbox: true
           })
         });
         await fetchProfile(token);
         localStorage.setItem('receiptId', `REC-${Math.floor(100000 + Math.random() * 900000)}`);
         localStorage.setItem('transactionId', `pay_sand_${Date.now()}`);
-        localStorage.setItem('paymentAmount', '999');
-        localStorage.setItem('selectedPlan', 'SILVER');
+        localStorage.setItem('paymentAmount', activePlanPrice.toString());
+        localStorage.setItem('selectedPlan', activePlanName);
         navigate('/payment-success');
         return;
       }
-
+ 
       if (!window.Razorpay) {
         alert('Razorpay SDK not loaded');
         return;
       }
-
+ 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
@@ -289,7 +295,7 @@ const StudentDashboard = ({ defaultTab }) => {
       alert('Payment failed to initialize.');
     }
   };
-
+ 
   const notifyAdmin = async () => {
     try {
       await fetch(`${API_BASE_URL}/api/student/verify-payment`, {
@@ -302,16 +308,16 @@ const StudentDashboard = ({ defaultTab }) => {
           razorpay_payment_id: `pay_sand_${Date.now()}`,
           razorpay_order_id: `order_sand_${Math.random().toString(36).substring(7)}`,
           razorpay_signature: 'sandbox_sig',
-          amount: 999,
-          planName: 'SILVER',
+          amount: activePlanPrice,
+          planName: activePlanName,
           sandbox: true
         })
       });
       await fetchProfile(token);
       localStorage.setItem('receiptId', `REC-${Math.floor(100000 + Math.random() * 900000)}`);
       localStorage.setItem('transactionId', `pay_sand_${Date.now()}`);
-      localStorage.setItem('paymentAmount', '999');
-      localStorage.setItem('selectedPlan', 'SILVER');
+      localStorage.setItem('paymentAmount', activePlanPrice.toString());
+      localStorage.setItem('selectedPlan', activePlanName);
       navigate('/payment-success');
     } catch (err) {
       console.error(err);
@@ -370,7 +376,7 @@ const StudentDashboard = ({ defaultTab }) => {
 
   const completionPercent = getCompletionPercent();
 
-  const whatsappUrl = `https://wa.me/919999999999?text=Hello%20Pradip%20Sir,%20I%20have%20registered%20on%20your%20CET%20Counselling%20portal%20and%20completed%20the%20payment.%20My%20details%20are:%20Name:%20${encodeURIComponent(profile.name)},%20Score:%20${encodeURIComponent(profile.cetScore || 'Not Provided')},%20Phone:%20${encodeURIComponent(profile.phone || 'Not Provided')}.%20Please%20schedule%20our%20counselling%20session!`;
+  const whatsappUrl = `https://wa.me/918983511645?text=Hello%20Pradip%20Sir,%20I%20have%20registered%20on%20your%20CET%20Counselling%20portal%20and%20completed%20the%20payment.%20My%20details%20are:%20Name:%20${encodeURIComponent(profile.name)},%20Score:%20${encodeURIComponent(profile.cetScore || 'Not Provided')},%20Phone:%20${encodeURIComponent(profile.phone || 'Not Provided')}.%20Please%20schedule%20our%20counselling%20session!`;
 
   return (
     <DashboardLayout>
@@ -565,7 +571,7 @@ const StudentDashboard = ({ defaultTab }) => {
                             <div className="text-center space-y-3">
                               <p className="text-gray-400 text-xs">Redirecting to Razorpay payment gateway...</p>
                               <Button onClick={handleRazorpayPayment} className="w-full py-3">
-                                Pay Now ₹999
+                                Pay Now ₹{activePlanPrice}
                               </Button>
                               <button onClick={() => setPaymentMethod(null)} className="text-xs text-gray-500 hover:text-white">Cancel</button>
                             </div>
@@ -576,7 +582,7 @@ const StudentDashboard = ({ defaultTab }) => {
                                   [QR CODE PRE-SEEDED]
                                 </div>
                               </div>
-                              <p className="text-gray-400 text-xs font-mono text-[10px]">GPay/PhonePe Scan to pay ₹999</p>
+                              <p className="text-gray-400 text-xs font-mono text-[10px]">GPay/PhonePe Scan to pay ₹{activePlanPrice}</p>
                               <Button onClick={notifyAdmin} className="w-full py-3">
                                 I Have Completed Payment
                               </Button>
@@ -764,7 +770,7 @@ const StudentDashboard = ({ defaultTab }) => {
 
                       <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2 text-xs">
                         <p className="text-gray-400">Contact Counselor:</p>
-                        <p className="text-white font-bold font-serif">+91 99999 99999</p>
+                        <p className="text-white font-bold font-serif">+91 89835 11645</p>
                         <p className="text-gray-500 text-[10px]">Timing: 10:00 AM - 7:00 PM</p>
                       </div>
                     </div>

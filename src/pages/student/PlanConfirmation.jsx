@@ -64,6 +64,16 @@ const PlanConfirmation = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('studentToken');
 
+  const [cmsData, setCmsData] = useState(null);
+
+  // Fetch CMS Data
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/public/cms-data`)
+      .then(res => res.json())
+      .then(data => setCmsData(data))
+      .catch(console.error);
+  }, []);
+
   // ── Profile completeness check (admission-type aware) ──────────────────────
   const admType = user?.admissionType || 'CET';
   const isProfileIncomplete = !user?.phone || !user?.category || !user?.city ||
@@ -141,7 +151,21 @@ const PlanConfirmation = () => {
   const selectedPlan = searchParams.get('plan') || localStorage.getItem('selectedPlan') || 'Silver';
   const isPlatinum = selectedPlan.toLowerCase().includes('platinum');
 
-  const planDetails = isPlatinum ? {
+  const matchingPlan = cmsData?.pricingPlans?.find(
+    p => p.name.toLowerCase() === selectedPlan.toLowerCase() ||
+         p.name.toLowerCase().replace(/\s+/g, '').includes(selectedPlan.toLowerCase().replace(/\s+/g, ''))
+  );
+
+  const planDetails = matchingPlan ? {
+    name: matchingPlan.name,
+    price: Number(matchingPlan.price),
+    oldPrice: Number(matchingPlan.oldPrice),
+    discount: matchingPlan.oldPrice ? `${Math.round(((Number(matchingPlan.oldPrice) - Number(matchingPlan.price)) / Number(matchingPlan.oldPrice)) * 100)}% Off` : 'Special Discount',
+    validity: 'Till CAP Round Admission Confirmation (Dec 2026)',
+    badge: matchingPlan.badge || 'Mentorship Plan',
+    features: matchingPlan.features || [],
+    benefits: matchingPlan.description || ''
+  } : (isPlatinum ? {
     name: 'Platinum Counselling',
     price: 1999,
     oldPrice: 2999,
@@ -173,7 +197,7 @@ const PlanConfirmation = () => {
       'Basic Admission Strategy PDF guides'
     ],
     benefits: 'Properly arrange your engineering or pharmacy preferences to guarantee the highest tier college possible based on your rank.'
-  };
+  });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

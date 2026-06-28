@@ -25,7 +25,16 @@ const Home = () => {
 
   const toggleForm = () => setIsFormOpen(!isFormOpen);
   const openAuth = () => setIsAuthOpen(true);
-  const handlePricingCta = (planName) => navigate(`/plan-confirmation?plan=${encodeURIComponent(planName)}`);
+  
+  const handlePricingCta = (planName) => {
+    localStorage.setItem('selectedPlan', planName);
+    const token = localStorage.getItem('studentToken');
+    if (!token) {
+      setIsAuthOpen(true);
+    } else {
+      navigate(`/plan-confirmation?plan=${encodeURIComponent(planName)}`);
+    }
+  };
 
   // Fetch CMS Data
   useEffect(() => {
@@ -35,14 +44,35 @@ const Home = () => {
       .catch(console.error);
   }, []);
 
-  // Scroll listener to trigger auth modal after 3 seconds of scrolling
+  // Hash anchor scrolling after CMS data is fetched
+  useEffect(() => {
+    if (cmsData.pricingPlans.length > 0) {
+      const hash = window.location.hash;
+      if (hash) {
+        const targetId = hash.replace('#', '');
+        setTimeout(() => {
+          const elem = document.getElementById(targetId);
+          if (elem) {
+            elem.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }
+    }
+  }, [cmsData]);
+
+  // Scroll listener to trigger auth modal after 3 seconds of scrolling (only if not logged in)
   useEffect(() => {
     const handleScroll = () => {
+      const token = localStorage.getItem('studentToken');
+      if (token) return;
       if (hasShownAuthRef.current) return;
       if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
       scrollTimerRef.current = setTimeout(() => {
-        setIsAuthOpen(true);
-        hasShownAuthRef.current = true;
+        const currentToken = localStorage.getItem('studentToken');
+        if (!currentToken) {
+          setIsAuthOpen(true);
+          hasShownAuthRef.current = true;
+        }
       }, 3000);
     };
     window.addEventListener('scroll', handleScroll);

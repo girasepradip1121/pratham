@@ -8,7 +8,7 @@ const Footer = () => {
     { icon: FaInstagram, href: "#", color: "hover:text-pink-500" },
     { icon: FaYoutube, href: "#", color: "hover:text-red-500" },
     { icon: FaTwitter, href: "#", color: "hover:text-sky-500" },
-    { icon: FaWhatsapp, href: "#", color: "hover:text-green-500" },
+    { icon: FaWhatsapp, href: "https://wa.me/918983511645", color: "hover:text-green-500" },
   ];
 
   return (
@@ -46,6 +46,8 @@ const Footer = () => {
                 <a
                   key={index}
                   href={social.href}
+                  target={social.href.startsWith('http') ? '_blank' : undefined}
+                  rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className={`p-3 glass rounded-xl text-gray-400 ${social.color} transition-all duration-300 hover:-translate-y-1`}
                 >
                   <social.icon size={20} />
